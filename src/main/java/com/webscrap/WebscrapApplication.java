@@ -15,9 +15,16 @@ public class WebscrapApplication
 
     public static void main(String[] args)
     {
+        String date = "1day";
+        String lannguage = "tr";
+        String address_country = "1";
+        String category = "3614";
+        String max = "3000";
+        String address_city = "34";
 
-        //		String searchQuery = "iphone 6s" ;
-        String baseUrl = "http://www.sahibinden.com/arama/ara?date=1day&address_country=1&language=tr&category=3614&address_city=34&a507_max=3000";
+        String baseUrl =
+                "http://www.sahibinden.com/arama/ara?date=" + date + "&address_country=" + address_country + "&language=" + lannguage + "&category=" + category
+                        + "&address_city=" + address_city + "&a507_max=" + max;
         WebClient client = new WebClient();
         client.getOptions().setCssEnabled(false);
         client.getOptions().setJavaScriptEnabled(false);
