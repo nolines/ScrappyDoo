@@ -1,4 +1,4 @@
-package com.webscrap;
+package com.webscrap.data;
 
 public class Item
 {
