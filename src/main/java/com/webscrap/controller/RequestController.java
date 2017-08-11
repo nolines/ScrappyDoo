@@ -11,10 +11,13 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,16 +42,15 @@ public class RequestController
     @Autowired
     private ClientService clientService;
 
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/search", method = RequestMethod.POST)
     @ApiResponses(value = {@ApiResponse(code = SC_CREATED, message = CREATED_MESSAGE, response = List.class),
             @ApiResponse(code = SC_BAD_REQUEST, message = BAD_REQUEST_MESSAGE, response = String.class),
             @ApiResponse(code = SC_UNAUTHORIZED, message = UNAUTHORIZED_MESSAGE, response = String.class),
             @ApiResponse(code = SC_FORBIDDEN, message = FORBIDDEN_MESSAGE, response = String.class),
             @ApiResponse(code = SC_NOT_FOUND, message = NOT_FOUND_MESSAGE, response = String.class)})
-    public ResponseEntity<List<Item>> search() throws IOException, TimeoutException
+    public ResponseEntity<List<Item>> search(@RequestBody @Valid final String url) throws IOException, TimeoutException
     {
-        String baseUrl = "http://www.sahibinden.com/arama/ara?date=1day&address_country=1&language=tr&category=3614&address_city=34&a507_max=3000";
-        String searchUrl = baseUrl;
+        String searchUrl = url;
         WebClient client = clientService.clientConfigure();
         List<Item> itemList = new ArrayList<>();
         try
