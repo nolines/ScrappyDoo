@@ -1,8 +1,5 @@
 package com.webscrap.constants;
 
-/**
- * Created by z003rn5u on 11.08.2017.
- */
 public class Constants
 {
     public static final String CREATED_MESSAGE = "Created";
