@@ -5,13 +5,13 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.webscrap.data.Item;
+import com.webscrap.data.SearchFilter;
 import com.webscrap.service.ClientService;
+import com.webscrap.service.FilterService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,11 +36,14 @@ import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
 @RestController
 @RequestMapping("/api/scraps")
-public class RequestController
+public class FilterController
 {
 
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private FilterService filterService;
 
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     @ApiResponses(value = {@ApiResponse(code = SC_CREATED, message = CREATED_MESSAGE, response = List.class),
@@ -48,11 +51,11 @@ public class RequestController
             @ApiResponse(code = SC_UNAUTHORIZED, message = UNAUTHORIZED_MESSAGE, response = String.class),
             @ApiResponse(code = SC_FORBIDDEN, message = FORBIDDEN_MESSAGE, response = String.class),
             @ApiResponse(code = SC_NOT_FOUND, message = NOT_FOUND_MESSAGE, response = String.class)})
-    public ResponseEntity<List<Item>> search(@RequestBody @Valid final String url) throws IOException, TimeoutException
+    public ResponseEntity<List<SearchFilter>> search(@RequestBody @Valid final String url) throws IOException, TimeoutException
     {
         String searchUrl = url;
         WebClient client = clientService.clientConfigure();
-        List<Item> itemList = new ArrayList<>();
+        List<SearchFilter> itemList = new ArrayList<>();
         try
         {
             HtmlPage page = client.getPage(searchUrl);
@@ -71,16 +74,23 @@ public class RequestController
                     HtmlElement price = ((HtmlElement) htmlItem.getFirstByXPath(".//td[@class='searchResultsPriceValue']"));
                     HtmlElement location = htmlItem.getFirstByXPath(".//td[@class='searchResultsLocationValue']");
 
-                    Item item = new Item();
+                    SearchFilter item = new SearchFilter();
                     item.setUrl(itemAnchor.getHrefAttribute());
                     item.setPrice(price.asText());
                     item.setLocation(location.asText());
 
-                    ObjectMapper mapper = new ObjectMapper();
-                    String jsonString = mapper.writeValueAsString(item);
                     itemList.add(item);
-                    System.out.println(jsonString);
+
                 }
+
+                if (itemList.size() != 0)
+                {
+                    for (SearchFilter itemToSave : itemList)
+                    {
+                        filterService.save(itemToSave);
+                    }
+                }
+
             }
 
         }
@@ -91,4 +101,9 @@ public class RequestController
         return ResponseEntity.ok().body(itemList);
     }
 
+    @RequestMapping(value = "/getAll", method = RequestMethod.GET)
+    public Iterable<SearchFilter> getAll()
+    {
+        return filterService.getAll();
+    }
 }
