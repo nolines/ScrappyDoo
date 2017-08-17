@@ -4,9 +4,9 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.webscrap.data.MailUser;
 import com.webscrap.data.SearchFilter;
 import com.webscrap.data.SearchFilterData;
-import com.webscrap.data.User;
 import com.webscrap.service.ClientService;
 import com.webscrap.service.EmailSenderService;
 import com.webscrap.service.FilterService;
@@ -23,6 +23,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import static com.webscrap.constants.Constants.BAD_REQUEST_MESSAGE;
@@ -72,7 +73,17 @@ public class FilterController
             }
             else
             {
+                SearchFilter searchFilter1 = filterService.getByFilterName(searchUrl);
+                if (null != searchFilter1)
+                {
+                    filterService.delete(searchFilter1);
+                }
                 SearchFilter searchFilter = new SearchFilter();
+                searchFilter.setFilterCount(itemList.size());
+                searchFilter.setFilterId(randomWithRange(10,109999999));
+                searchFilter.setFilterName(searchUrl);
+                filterService.save(searchFilter);
+
                 for (HtmlElement htmlItem : items)
                 {
 
@@ -84,20 +95,19 @@ public class FilterController
                     item.setUrl(itemAnchor.getHrefAttribute());
                     item.setPrice(price.asText());
                     item.setLocation(location.asText());
-//                    item.setSearchFilter(searchFilter);
+                    item.setSearchFilter(searchFilter);
+                    //                    item.setSearchFilter(searchFilter);
                     itemList.add(item);
 
                 }
-
-                searchFilter.setFilterCount(itemList.size());
                 searchFilter.setSearchFilterData(itemList);
                 filterService.save(searchFilter);
-                User user = new User();
-                user.setEmailAdress("cemrecevik@gmail.com");
-                user.setEmailAdress("batuhaneke@gmail.com");
-                user.setFirstName("cemre");
-                user.setLastName("cevik");
-                emailSenderService.sendNotification(user, itemList);
+
+                MailUser mailUser = new MailUser();
+                mailUser.setEmailAdress("cemrecevik@gmail.com");
+                mailUser.setFirstName("cemre");
+                mailUser.setLastName("cevik");
+                emailSenderService.sendNotification(mailUser, itemList);
             }
 
         }
@@ -112,5 +122,11 @@ public class FilterController
     public Iterable<SearchFilter> getAll()
     {
         return filterService.getAll();
+    }
+
+    private int randomWithRange(int min, int max)
+    {
+        int range = Math.abs(max - min) + 1;
+        return (int)(Math.random() * range) + (min <= max ? min : max);
     }
 }

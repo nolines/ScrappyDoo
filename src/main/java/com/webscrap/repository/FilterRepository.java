@@ -10,4 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FilterRepository extends CrudRepository<SearchFilter, String>
 {
+
+    SearchFilter getByFilterName(String filterName);
+
 }

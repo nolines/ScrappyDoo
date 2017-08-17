@@ -1,7 +1,6 @@
 package com.webscrap.service;
 
 import com.webscrap.data.SearchFilter;
-import com.webscrap.data.SearchFilterData;
 import com.webscrap.repository.FilterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,16 @@ public class FilterService
     public Iterable<SearchFilter> getAll()
     {
         return filterRepository.findAll();
+    }
+
+    public SearchFilter getByFilterName(String filterName)
+    {
+        return filterRepository.getByFilterName(filterName);
+    }
+
+    public void delete(SearchFilter item)
+    {
+        filterRepository.delete(item);
     }
 
 }

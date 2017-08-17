@@ -21,7 +21,7 @@ public class SearchFilterData
     private String url;
     private String price;
     private String location;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private SearchFilter searchFilter;
 
     public SearchFilter getSearchFilter()

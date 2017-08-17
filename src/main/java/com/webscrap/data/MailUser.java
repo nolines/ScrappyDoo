@@ -1,12 +1,12 @@
 package com.webscrap.data;
 
-public class User
+public class MailUser
 {
     private String firstName;
     private String lastName;
     private String emailAdress;
 
-    public User(){}
+    public MailUser(){}
 
     public String getFirstName()
     {
