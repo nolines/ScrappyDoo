@@ -6,7 +6,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.webscrap.data.SearchFilter;
 import com.webscrap.data.SearchFilterData;
+import com.webscrap.data.User;
 import com.webscrap.service.ClientService;
+import com.webscrap.service.EmailSenderService;
 import com.webscrap.service.FilterService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -38,6 +40,8 @@ import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 @RequestMapping("/api/scraps")
 public class FilterController
 {
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @Autowired
     private ClientService clientService;
@@ -88,7 +92,12 @@ public class FilterController
                 searchFilter.setFilterCount(itemList.size());
                 searchFilter.setSearchFilterData(itemList);
                 filterService.save(searchFilter);
-
+                User user = new User();
+                user.setEmailAdress("cemrecevik@gmail.com");
+                user.setEmailAdress("batuhaneke@gmail.com");
+                user.setFirstName("cemre");
+                user.setLastName("cevik");
+                emailSenderService.sendNotification(user, itemList);
             }
 
         }
