@@ -1,61 +1,57 @@
 package com.webscrap.data;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.OneToMany;
+import java.util.List;
 
-@Entity
-@Table(name = "filter_data")
+/**
+ * Created by z003rn5u on 17.08.2017.
+ */
+@Entity(name = "filters")
 public class SearchFilter
 {
     @Id
-    @Column(name="id")
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Integer id;
-    private String url;
-    private String price;
-    private String location;
+    @Column(name = "filterId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer filterId;
+    private Integer filterCount;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "searchFilter")
+    private List<SearchFilterData> searchFilterData;
 
-    public String getLocation()
+    public List<SearchFilterData> getSearchFilterData()
     {
-        return location;
+        return searchFilterData;
     }
 
-    public void setLocation(String location)
+    public void setSearchFilterData(List<SearchFilterData> searchFilterData)
     {
-        this.location = location;
+        this.searchFilterData = searchFilterData;
     }
 
-    public String getPrice()
+    public Integer getFilterId()
     {
-        return price;
+        return filterId;
     }
 
-    public void setPrice(String price)
+    public void setFilterId(Integer filterId)
     {
-        this.price = price;
+        this.filterId = filterId;
     }
 
-    public String getUrl()
+    public Integer getFilterCount()
     {
-        return url;
+        return filterCount;
     }
 
-    public void setUrl(String url)
+    public void setFilterCount(Integer filterCount)
     {
-        this.url = url;
+        this.filterCount = filterCount;
     }
 
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId(Integer id)
-    {
-        this.id = id;
-    }
 }
