@@ -23,7 +23,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
 import static com.webscrap.constants.Constants.BAD_REQUEST_MESSAGE;
@@ -60,6 +59,7 @@ public class FilterController
             throws IOException, TimeoutException
     {
         String searchUrl = url;
+        Integer latestCount = 0;
         WebClient client = clientService.clientConfigure();
         List<SearchFilterData> itemList = new ArrayList<>();
         try
@@ -73,16 +73,25 @@ public class FilterController
             }
             else
             {
-                SearchFilter searchFilter1 = filterService.getByFilterName(searchUrl);
-                if (null != searchFilter1)
+                //                SearchFilter searchFilter1 = filterService.getByFilterName(searchUrl);
+                //                if (null != searchFilter1)
+                //                {
+                //                    filterService.delete(searchFilter1);
+                //                }
+                SearchFilter searchFilter = filterService.getByFilterName(searchUrl);
+                if (null == searchFilter)
                 {
-                    filterService.delete(searchFilter1);
+                    searchFilter = new SearchFilter();
+                    searchFilter.setFilterCount(items.size());
+                    searchFilter.setFilterId(randomWithRange(10, 109999999));
+                    searchFilter.setFilterName(searchUrl);
+                    filterService.save(searchFilter);
                 }
-                SearchFilter searchFilter = new SearchFilter();
-                searchFilter.setFilterCount(items.size());
-                searchFilter.setFilterId(randomWithRange(10, 109999999));
-                searchFilter.setFilterName(searchUrl);
-                filterService.save(searchFilter);
+
+                if (null != searchFilter.getFilterName())
+                {
+                    latestCount = filterService.getByFilterName(searchFilter.getFilterName()).getFilterCount();
+                }
 
                 for (HtmlElement htmlItem : items)
                 {
@@ -96,21 +105,24 @@ public class FilterController
                     item.setPrice(price.asText());
                     item.setLocation(location.asText());
                     item.setSearchFilter(searchFilter);
-                    //                    item.setSearchFilter(searchFilter);
-                    itemList.add(item);
 
+                    try
+                    {
+                        filterService.save(item);
+                        itemList.add(item);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
                 }
-                searchFilter.setSearchFilterData(itemList);
-                filterService.save(searchFilter);
-                
-                if (items.size() > searchFilter.getFilterCount())
-                {
-                    MailUser mailUser = new MailUser();
-                    mailUser.setEmailAdress("cemrecevik@gmail.com");
-                    mailUser.setFirstName("cemre");
-                    mailUser.setLastName("cevik");
-                    emailSenderService.sendNotification(mailUser, itemList);
-                }
+
+                MailUser mailUser = new MailUser();
+                mailUser.setEmailAdress("cemrecevik@gmail.com");
+                mailUser.setFirstName("cemre");
+                mailUser.setLastName("cevik");
+                emailSenderService.sendNotification(mailUser, itemList);
+
             }
 
         }

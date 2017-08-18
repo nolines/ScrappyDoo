@@ -1,6 +1,8 @@
 package com.webscrap.service;
 
 import com.webscrap.data.SearchFilter;
+import com.webscrap.data.SearchFilterData;
+import com.webscrap.repository.FilterDataRepository;
 import com.webscrap.repository.FilterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,9 @@ public class FilterService
 {
     @Autowired
     private FilterRepository filterRepository;
+
+    @Autowired
+    private FilterDataRepository filterDataRepository;
 
     public SearchFilter save(SearchFilter item)
     {
@@ -33,5 +38,11 @@ public class FilterService
     {
         filterRepository.delete(item);
     }
+
+    public SearchFilterData save(SearchFilterData item)
+    {
+        return filterDataRepository.save(item);
+    }
+
 
 }
