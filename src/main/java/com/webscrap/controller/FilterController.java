@@ -79,8 +79,8 @@ public class FilterController
                     filterService.delete(searchFilter1);
                 }
                 SearchFilter searchFilter = new SearchFilter();
-                searchFilter.setFilterCount(itemList.size());
-                searchFilter.setFilterId(randomWithRange(10,109999999));
+                searchFilter.setFilterCount(items.size());
+                searchFilter.setFilterId(randomWithRange(10, 109999999));
                 searchFilter.setFilterName(searchUrl);
                 filterService.save(searchFilter);
 
@@ -102,12 +102,15 @@ public class FilterController
                 }
                 searchFilter.setSearchFilterData(itemList);
                 filterService.save(searchFilter);
-
-                MailUser mailUser = new MailUser();
-                mailUser.setEmailAdress("cemrecevik@gmail.com");
-                mailUser.setFirstName("cemre");
-                mailUser.setLastName("cevik");
-                emailSenderService.sendNotification(mailUser, itemList);
+                
+                if (items.size() > searchFilter.getFilterCount())
+                {
+                    MailUser mailUser = new MailUser();
+                    mailUser.setEmailAdress("cemrecevik@gmail.com");
+                    mailUser.setFirstName("cemre");
+                    mailUser.setLastName("cevik");
+                    emailSenderService.sendNotification(mailUser, itemList);
+                }
             }
 
         }
@@ -127,6 +130,6 @@ public class FilterController
     private int randomWithRange(int min, int max)
     {
         int range = Math.abs(max - min) + 1;
-        return (int)(Math.random() * range) + (min <= max ? min : max);
+        return (int) (Math.random() * range) + (min <= max ? min : max);
     }
 }
